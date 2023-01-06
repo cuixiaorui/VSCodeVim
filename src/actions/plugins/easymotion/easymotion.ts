@@ -66,7 +66,6 @@ export class EasyMotion implements IEasyMotion {
       const type = vscode.window.createTextEditorDecorationType(decorations || {});
 
       this.decorationTypeCache[length] = type;
-
       return type;
     }
   }
@@ -409,6 +408,7 @@ export class EasyMotion implements IEasyMotion {
 
     for (let j = 1; j < this.decorations.length; j++) {
       if (this.decorations[j]) {
+        // 这块的逻辑 是显示 跳转点的
         editor.setDecorations(EasyMotion.getDecorationType(j), this.decorations[j]);
       }
     }
