@@ -40,7 +40,7 @@ class MarkerDecoration {
   private marker!: Marker;
   private textEditorDecorationType: vscode.TextEditorDecorationType;
 
-  private static backgroundColors = ['#ccff88', '#99ccff']; // TODO 基于配置来
+  private static backgroundColors = ['#ccff88', '#99ccff'];
   constructor(editor: vscode.TextEditor, marker: Marker) {
     this.editor = editor;
     this.marker = marker;
