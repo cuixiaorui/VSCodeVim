@@ -5,6 +5,7 @@ import type { VimState } from '../../../state/vimState';
 
 export type LabelPosition = 'after' | 'before';
 export type JumpToAnywhere = true | false;
+export type JumpInLine = true | false;
 
 export interface EasyMotionMoveOptionsBase {
   searchOptions?: 'min' | 'max';
@@ -18,6 +19,7 @@ export interface EasyMotionCharMoveOpions extends EasyMotionMoveOptionsBase {
 export interface EasyMotionWordMoveOpions extends EasyMotionMoveOptionsBase {
   labelPosition?: LabelPosition;
   jumpToAnywhere?: JumpToAnywhere;
+  jumpInLine?: JumpInLine;
 }
 
 export interface Marker {

@@ -156,7 +156,7 @@ class EasyMotionLineForward extends EasyMotionWordMoveCommandBase {
   keys = buildTriggerKeys({ key: 'l' });
 
   constructor() {
-    super({ jumpToAnywhere: true, searchOptions: 'min', labelPosition: 'after' });
+    super({ jumpInLine: true, searchOptions: 'min', labelPosition: 'after' });
   }
 }
 
@@ -165,7 +165,7 @@ class EasyMotionLineBackward extends EasyMotionWordMoveCommandBase {
   keys = buildTriggerKeys({ key: 'h' });
 
   constructor() {
-    super({ jumpToAnywhere: true, searchOptions: 'max', labelPosition: 'after' });
+    super({ jumpInLine: true, searchOptions: 'max', labelPosition: 'after' });
   }
 }
 
