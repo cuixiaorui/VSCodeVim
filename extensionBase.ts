@@ -50,7 +50,12 @@ export async function getAndUpdateModeHandler(
     // We sync the cursors here because ModeHandler is specific to a document, not an editor, so we
     // need to update our representation of the cursors when switching between editors for the same document.
     // This will be unnecessary once #4889 is fixed.
-    curHandler.syncCursors();
+    // 这里会造成切换 file 之后 cursors 同步失败的问题
+    // const { selections } = this.vimState.editor;
+    // 这里的 selections 获取的值是 0　然后赋值给了　cursors 所以就导致按下移动后 回到文件顶部了
+    // 至于这里为什么要同步 暂时还没有找到它要解决的 case
+    // 注释掉之后看起来也没有影响到其他的功能
+    // curHandler.syncCursors();
     await curHandler.updateView({ drawSelection: false, revealRange: false });
   }
 
