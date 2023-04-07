@@ -4,7 +4,7 @@ import { configuration } from './../../../configuration/configuration';
 import { LeapSearchDirection } from './leap';
 
 export class Marker {
-  private decoration!: MarkerDecoration;
+  private decoration: MarkerDecoration;
   label: string = '';
   searchString: string;
   matchPosition: vscode.Position;
@@ -38,12 +38,11 @@ export class Marker {
 }
 
 class MarkerDecoration {
-  private range!: vscode.Range;
-  private editor!: vscode.TextEditor;
-  private marker!: Marker;
+  private editor: vscode.TextEditor;
+  private marker: Marker;
+  private range: vscode.Range | undefined;
   private textEditorDecorationType: vscode.TextEditorDecorationType;
 
-  private static backgroundColors = ['#ccff88', '#99ccff'];
   constructor(editor: vscode.TextEditor, marker: Marker) {
     this.editor = editor;
     this.marker = marker;
@@ -53,7 +52,7 @@ class MarkerDecoration {
 
   private createRange() {
     let position = this.marker.matchPosition;
-    if (configuration.leapShowMarkerPosition === 'after') {
+    if (configuration.leap.showMarkerPosition === 'after') {
       position = new vscode.Position(position.line, position.character + 2);
     }
     this.range = new vscode.Range(
@@ -65,7 +64,7 @@ class MarkerDecoration {
   }
 
   private calcDecorationBackgroundColor() {
-    const labels = configuration.leapLabels.split('').reverse().join('');
+    const labels = configuration.leap.labels.split('').reverse().join('');
 
     let index = 0;
     if (this.marker.prefix) {
@@ -75,7 +74,7 @@ class MarkerDecoration {
       }
     }
 
-    return MarkerDecoration.backgroundColors[index];
+    return configuration.leap.marker.backgroundColors[index]
   }
 
   show() {
@@ -87,7 +86,7 @@ class MarkerDecoration {
       before: {
         contentText: this.marker.label,
         backgroundColor: this.calcDecorationBackgroundColor(),
-        color: '#000000',
+        color: configuration.leap.marker.charColor,
         margin: `0 -1ch 0 0;
             position: absolute;
             font-weight: normal;`,
@@ -97,7 +96,7 @@ class MarkerDecoration {
 
     return [
       {
-        range: this.range,
+        range: this.range!,
         renderOptions: {
           dark: secondCharRenderOptions,
           light: secondCharRenderOptions,
@@ -112,7 +111,7 @@ class MarkerDecoration {
 }
 
 export function generateMarkerNames(count: number) {
-  const leapLabels = configuration.leapLabels;
+  const leapLabels = configuration.leap.labels;
   const result = [];
 
   const prefixCount = Math.floor(count / leapLabels.length);

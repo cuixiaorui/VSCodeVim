@@ -16,6 +16,7 @@ import {
   ICamelCaseMotionConfiguration,
   ITargetsConfiguration,
   Digraph,
+  ILeapConfiguration,
 } from './iconfiguration';
 
 import * as packagejson from '../../package.json';
@@ -264,11 +265,17 @@ class Configuration implements IConfiguration {
   easymotionKeys = 'hklyuiopnm,qwertzxcvbasdgjf;';
   easymotionJumpToAnywhereRegex = '\\b[A-Za-z0-9]|[A-Za-z0-9]\\b|_.|#.|[a-z][A-Z]';
 
-  leap = false;
-  leapShowMarkerPosition: 'after' | 'target' = 'after';
-  leapLabels = 'sklyuiopnm,qwertzxcvbahdgjf;';
-  leapCaseSensitive = false;
-  leapBidirectionalSearch = true;
+  leap: ILeapConfiguration = {
+    enable: false,
+    showMarkerPosition: 'after',
+    labels: 'sklyuiopnm,qwertzxcvbahdgjf;',
+    caseSensitive: false,
+    bidirectionalSearch: false,
+    marker: {
+      backgroundColors: ['#ccff88', '#99ccff'],
+      charColor: '#000000',
+    },
+  };
 
   targets: ITargetsConfiguration = {
     enable: false,

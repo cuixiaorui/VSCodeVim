@@ -58,10 +58,9 @@ export class CommandEscInsertMode extends BaseCommand {
           lastActionBeforeEsc.keysPressed[lastActionBeforeEsc.keysPressed.length - 1] === '\n'))
     ) {
       for (const cursor of vimState.cursors) {
-        if (/^\s+$/.test(vimState.document.lineAt(cursor.stop).text)) {
-          vimState.recordedState.transformer.delete(
-            new vscode.Range(cursor.stop.getLineBegin(), cursor.stop.getLineEnd())
-          );
+        const line = vimState.document.lineAt(cursor.stop);
+        if (line.text.length > 0 && line.isEmptyOrWhitespace) {
+          vimState.recordedState.transformer.delete(line.range);
         }
       }
     }
@@ -243,7 +242,7 @@ export class CommandInsertInInsertMode extends BaseCommand {
         vimState.modeData.mode === Mode.Insert ? vimState.modeData.highSurrogate : undefined;
 
       if (isHighSurrogate(char.charCodeAt(0))) {
-        vimState.setModeData({
+        await vimState.setModeData({
           mode: Mode.Insert,
           highSurrogate: char,
         });
@@ -255,7 +254,7 @@ export class CommandInsertInInsertMode extends BaseCommand {
           text = prevHighSurrogate + char;
         }
 
-        vimState.setModeData({
+        await vimState.setModeData({
           mode: Mode.Insert,
           highSurrogate: undefined,
         });

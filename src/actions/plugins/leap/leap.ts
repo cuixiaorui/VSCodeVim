@@ -13,17 +13,18 @@ export enum LeapSearchDirection {
 }
 
 export class Leap {
-  markers: Marker[] = [];
   vimState: VimState;
-  previousMode!: Mode;
+  previousMode: Mode;
+  markers: Marker[] = [];
+  searchMode: string = '';
   isRepeatLastSearch: boolean = false;
   direction?: LeapSearchDirection;
   leapAction?: LeapAction;
   firstSearchString?: string;
-  searchMode: string = '';
 
   constructor(vimState: VimState) {
     this.vimState = vimState;
+    this.previousMode = vimState.currentMode;
   }
 
   public createMarkers(matches: Match[]) {
@@ -37,21 +38,23 @@ export class Leap {
   }
 
   private setMarkersName() {
-    const map: { [key: string]: Marker[] } = {};
+    const map: Map<string, Marker[]> = new Map();
 
     this.markers.forEach((marker) => {
       const key = marker.searchString;
-      if (!map[key]) {
-        map[key] = [];
+      if (!map.has(key)) {
+        map.set(key, []);
       }
 
-      map[key].push(marker);
+      map.get(key)?.push(marker);
     });
 
-    Object.keys(map).forEach((key) => {
-      let group = configuration.leapBidirectionalSearch ? this.reorder(map[key]) : map[key];
-      const markerNames = generateMarkerNames(group.length);
-      group.forEach((marker, index) => {
+    map.forEach((markers) => {
+      if (configuration.leap.bidirectionalSearch) markers = this.reorder(markers);
+
+      const markerNames = generateMarkerNames(markers.length);
+
+      markers.forEach((marker, index) => {
         marker.label = markerNames[index];
       });
     });
@@ -151,13 +154,15 @@ export class Leap {
   }
 
   public changeCursorStopPosition(position: Position) {
+    const leap = getLeapInstance();
+
     const isVisualModel =
-      this.vimState.leap.previousMode === Mode.Visual ||
-      this.vimState.leap.previousMode === Mode.VisualLine ||
-      this.vimState.leap.previousMode === Mode.VisualBlock;
+      leap.previousMode === Mode.Visual ||
+      leap.previousMode === Mode.VisualLine ||
+      leap.previousMode === Mode.VisualBlock;
 
     if (isVisualModel) {
-      if (configuration.leapBidirectionalSearch) {
+      if (configuration.leap.bidirectionalSearch) {
         if (this.searchMode === 's') {
           if (isBackward(position, this.vimState.cursorStopPosition)) {
             this.containMarkerBackwardJump(position);
@@ -214,22 +219,22 @@ export class Leap {
   }
 }
 
-export function createLeap(
-  vimState: VimState,
-  direction: LeapSearchDirection = LeapSearchDirection.Backward,
-  firstSearchString: string = ''
-) {
-  const leap = new Leap(vimState);
-  leap.direction = direction;
-  leap.firstSearchString = firstSearchString;
-
-  return leap;
-}
-
 export function isBackward(positionA: Position, positionB: Position) {
   if (positionA.line !== positionB.line) {
     return positionA.line > positionB.line;
   } else {
     return positionA.character > positionB.character;
   }
+}
+
+let leap: Leap;
+export function initLeap(vimState: VimState) {
+  leap = new Leap(vimState);
+}
+export function getLeapInstance(): Leap {
+  return leap;
+}
+
+export function disposeLeap() {
+  leap?.cleanupMarkers()
 }
