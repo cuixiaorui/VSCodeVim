@@ -42,6 +42,7 @@ import { SpecialKeys } from '../util/specialKeys';
 import { SearchDecorations, getDecorationsForSearchMatchRanges } from '../util/decorationUtils';
 import { BaseOperator } from '../actions/operator';
 import { SearchByNCharCommand } from '../actions/plugins/easymotion/easymotion.cmd';
+import { generateFlashDecorations } from '../actions/plugins/flash/flash';
 import { Position, Uri } from 'vscode';
 import { RemapState } from '../state/remapState';
 import * as process from 'process';
@@ -283,8 +284,7 @@ export class ModeHandler implements vscode.Disposable, IModeHandler {
            * anchor because we need to move vscode anchor one to the right of our start when our start
            * is after our stop in order to include the start character on vscodes selection.
            */
-          return;
-        }
+          return; }
 
         const cursorEnd = laterOf(
           this.vimState.cursorStartPosition,
@@ -1176,6 +1176,7 @@ export class ModeHandler implements vscode.Disposable, IModeHandler {
   }
 
   public updateSearchHighlights(showHighlights: boolean) {
+    console.log("updateSearchHighlights")
     const cacheKey = this.searchDecorationCacheKey;
     this.searchDecorationCacheKey = undefined;
 
@@ -1186,6 +1187,8 @@ export class ModeHandler implements vscode.Disposable, IModeHandler {
         this.vimState.modeData.mode === Mode.SearchInProgressMode
       ) {
         decorations = this.vimState.modeData.commandLine.getDecorations(this.vimState);
+      } else if (this.vimState.modeData.mode === Mode.FlashSearchInProgressMode) {
+        decorations = generateFlashDecorations(this.vimState);
       } else if (globalState.searchState) {
         if (
           cacheKey &&
@@ -1580,9 +1583,11 @@ export class ModeHandler implements vscode.Disposable, IModeHandler {
     const showHighlights =
       (configuration.incsearch &&
         (this.currentMode === Mode.SearchInProgressMode ||
-          this.currentMode === Mode.CommandlineInProgress)) ||
+          this.currentMode === Mode.CommandlineInProgress ||
+          this.currentMode === Mode.FlashSearchInProgressMode)) ||
       (configuration.inccommand && this.currentMode === Mode.CommandlineInProgress) ||
       (configuration.hlsearch && globalState.hl);
+
     for (const editor of vscode.window.visibleTextEditors) {
       const mh = this.handlerMap.get(editor.document.uri);
       if (mh) {

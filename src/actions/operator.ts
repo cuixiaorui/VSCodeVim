@@ -303,7 +303,7 @@ class ChangeOperatorSVisual extends BaseOperator {
 
   // Don't clash with Sneak plugin
   public override doesActionApply(vimState: VimState, keysPressed: string[]): boolean {
-    return super.doesActionApply(vimState, keysPressed) && !configuration.sneak;
+    return super.doesActionApply(vimState, keysPressed) && !configuration.sneak
   }
 
   public async run(vimState: VimState, start: Position, end: Position): Promise<void> {

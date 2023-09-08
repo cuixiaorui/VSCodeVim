@@ -86,6 +86,10 @@ export interface ITargetsConfiguration {
   smartQuotes: ISmartQuotesConfiguration;
 }
 
+export interface IFlashConfiguration{
+  enable: boolean
+}
+
 export interface IConfiguration {
   [key: string]: any;
 
@@ -159,6 +163,7 @@ export interface IConfiguration {
    * Use sneak plugin?
    */
   sneak: boolean;
+
 
   /**
    * Case sensitivity is determined by 'ignorecase' and 'smartcase'
@@ -361,6 +366,7 @@ export interface IConfiguration {
     path: string;
   };
 
+  flash: IFlashConfiguration
   /**
    * Automatically apply the `/g` flag to substitute commands.
    */

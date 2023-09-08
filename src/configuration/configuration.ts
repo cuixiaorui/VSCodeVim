@@ -264,6 +264,10 @@ class Configuration implements IConfiguration {
   easymotionKeys = 'hklyuiopnm,qwertzxcvbasdgjf;';
   easymotionJumpToAnywhereRegex = '\\b[A-Za-z0-9]|[A-Za-z0-9]\\b|_.|#.|[a-z][A-Z]';
 
+  flash = {
+    enable: true
+  };
+
   targets: ITargetsConfiguration = {
     enable: false,
 
