@@ -4,20 +4,20 @@ import { Position } from 'vscode';
 import { VimState } from '../../../state/vimState';
 import { RegisterAction } from '../../base';
 import { configuration } from '../../../configuration/configuration';
-import * as vscode from 'vscode';
 import {
   appendSearchString,
   resetFlash,
   flash,
   deleteSearchString,
-  generateFlashDecorations,
-  getSearchMatches,
-  MarkerDecoration,
-  findMarkerDecorationByLabel,
-  takeMarkerLabel,
-  generateMarkerLabels,
+  recordPreviousMode,
 } from './flash';
-
+import { createSearchMatches } from './flashMatch';
+import {
+  cleanAllFlashMarkerDecorations,
+  findMarkerDecorationByLabel,
+  createMarkerLabels,
+  createMarkerDecorations,
+} from './flashMarker';
 @RegisterAction
 class FlashCommand extends BaseCommand {
   modes = [Mode.Normal, Mode.Visual, Mode.VisualLine, Mode.VisualBlock];
@@ -33,11 +33,11 @@ class FlashCommand extends BaseCommand {
   }
 
   public override async exec(position: Position, vimState: VimState): Promise<void> {
-    if (configuration.flash.enable) {
-      resetFlash();
-      flash.previousMode = vimState.currentMode;
-      await vimState.setCurrentMode(Mode.FlashSearchInProgressMode);
-    }
+    if (!configuration.flash.enable) return;
+
+    resetFlash();
+    recordPreviousMode(vimState.currentMode);
+    await vimState.setCurrentMode(Mode.FlashSearchInProgressMode);
   }
 }
 
@@ -45,39 +45,38 @@ class FlashCommand extends BaseCommand {
 class FlashSearchInProgressCommand extends BaseCommand {
   modes = [Mode.FlashSearchInProgressMode];
   keys = ['<character>'];
-  public searchString: string = '';
 
   public override async exec(position: Position, vimState: VimState): Promise<void> {
-    const key = this.keysPressed[0];
+    const chat = this.keysPressed[0];
 
-    const markerDecoration = findMarkerDecorationByLabel(key);
-    if (markerDecoration) {
-      vimState.cursorStopPosition = markerDecoration.getJumpPosition();
-      await vimState.setCurrentMode(flash.previousMode!);
-      resetFlash();
+    findMarkerDecorationByLabel(chat)
+      ? this.handleJump(chat, vimState)
+      : this.handleSearch(chat, vimState);
+  }
+
+  private handleSearch(chat: string, vimState: VimState) {
+    if (this.isBackSpace(chat)) {
+      deleteSearchString();
     } else {
-      if (key === '<BS>' || key === '<S-BS>') {
-        deleteSearchString();
-      } else {
-        appendSearchString(key);
-      }
-
-      if (flash.markerDecorations) {
-        // clean all marker decorations
-        flash.markerDecorations.forEach((marker) => {
-          marker.dispose();
-        });
-      }
-
-      const matches = getSearchMatches(vimState);
-      const labels = generateMarkerLabels(matches, vimState);
-      flash.markerDecorations = matches.map(({ range }, index) => {
-        const label = labels[index] || '';
-        const markerDecoration = new MarkerDecoration(range, vimState, label);
-        markerDecoration.show();
-        return markerDecoration;
-      });
+      appendSearchString(chat);
     }
+
+    cleanAllFlashMarkerDecorations();
+
+    const matches = createSearchMatches(vimState.document);
+    const labels = createMarkerLabels(matches, vimState);
+    createMarkerDecorations(matches, labels, vimState.editor);
+  }
+
+  private async handleJump(key: string, vimState: VimState) {
+    const markerDecoration = findMarkerDecorationByLabel(key);
+    vimState.cursorStopPosition = markerDecoration!.getJumpPosition();
+    await vimState.setCurrentMode(flash.previousMode!);
+    resetFlash();
+  }
+
+  private isBackSpace(key: string) {
+    return key === '<BS>' || key === '<S-BS>';
   }
 }
 

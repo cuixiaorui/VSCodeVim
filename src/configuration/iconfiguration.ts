@@ -87,7 +87,8 @@ export interface ITargetsConfiguration {
 }
 
 export interface IFlashConfiguration{
-  enable: boolean
+  enable: boolean;
+  ignorecase: boolean
 }
 
 export interface IConfiguration {

@@ -46,7 +46,9 @@ export class Configuration implements IConfiguration {
 
   flash: IFlashConfiguration = {
     enable: false,
+    ignorecase: true
   }
+
   targets: ITargetsConfiguration = {
     enable: false,
     bracketObjects: {

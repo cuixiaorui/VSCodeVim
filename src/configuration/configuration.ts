@@ -265,7 +265,8 @@ class Configuration implements IConfiguration {
   easymotionJumpToAnywhereRegex = '\\b[A-Za-z0-9]|[A-Za-z0-9]\\b|_.|#.|[a-z][A-Z]';
 
   flash = {
-    enable: true
+    enable: true,
+    ignorecase: true
   };
 
   targets: ITargetsConfiguration = {
