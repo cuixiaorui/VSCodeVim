@@ -248,7 +248,20 @@ export abstract class EasyMotionWordMoveCommandBase extends BaseEasyMotionComman
   }
 
   public getMatches(position: Position, vimState: VimState): Match[] {
-    return this.getMatchesForWord(position, vimState, this.searchOptions(position));
+    const options = this.searchOptions(position);
+
+    if (this._options.jumpInLine) {
+      if (this._options.searchOptions === 'min') {
+        const character = vimState.document.lineAt(position.line).range.end.character;
+        const maxPosition = new Position(position.line, character);
+        options.max = maxPosition;
+      } else {
+        const minPosition = new Position(position.line, 0);
+        options.min = minPosition;
+      }
+    }
+
+    return this.getMatchesForWord(position, vimState, options);
   }
 
   public resolveMatchPosition(match: Match): Position {
@@ -266,9 +279,13 @@ export abstract class EasyMotionWordMoveCommandBase extends BaseEasyMotionComman
     vimState: VimState,
     options?: SearchOptions,
   ): Match[] {
-    const regex = this._options.jumpToAnywhere
-      ? new RegExp(configuration.easymotionJumpToAnywhereRegex, 'g')
-      : new RegExp('\\w{1,}', 'g');
+    let regex: RegExp;
+    if (this._options.jumpToAnywhere || this._options.jumpInLine) {
+      regex = new RegExp(configuration.easymotionJumpToAnywhereRegex, 'g');
+    } else {
+      regex = new RegExp('\\w{1,}', 'g');
+    }
+
     return vimState.easyMotion.sortedSearch(vimState.document, position, regex, options);
   }
 }
