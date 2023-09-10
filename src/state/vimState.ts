@@ -17,6 +17,7 @@ import { ExCommandLine, SearchCommandLine } from '../cmd_line/commandLine';
 import { ModeData } from '../mode/modeData';
 import { SearchDirection } from '../vimscript/pattern';
 import { globalState } from './globalState';
+import { Flash } from '../actions/plugins/flash/flash';
 
 interface IInputMethodSwitcher {
   switchInputMethod(prevMode: Mode, newMode: Mode): Promise<void>;
@@ -60,6 +61,7 @@ export class VimState implements vscode.Disposable {
   public historyTracker: HistoryTracker;
 
   public easyMotion: IEasyMotion;
+  public flash: Flash;
 
   public readonly documentUri: vscode.Uri;
 
@@ -314,6 +316,7 @@ export class VimState implements vscode.Disposable {
     this.documentUri = editor?.document.uri ?? vscode.Uri.file(''); // TODO: this is needed for some badly written tests
     this.historyTracker = new HistoryTracker(this);
     this.easyMotion = easyMotion;
+    this.flash = new Flash();
   }
 
   async load() {

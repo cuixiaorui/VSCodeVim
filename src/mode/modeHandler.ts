@@ -1700,6 +1700,8 @@ function getCursorType(vimState: VimState, mode: Mode): VSCodeVimCursorType {
       return VSCodeVimCursorType.TextDecoration;
     case Mode.SearchInProgressMode:
       return VSCodeVimCursorType.UnderlineThin;
+    case Mode.FlashSearchInProgressMode:
+      return VSCodeVimCursorType.UnderlineThin;
     case Mode.CommandlineInProgress:
       return VSCodeVimCursorType.UnderlineThin;
     case Mode.Replace:

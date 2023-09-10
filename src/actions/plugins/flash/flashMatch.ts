@@ -1,13 +1,13 @@
 import * as vscode from 'vscode';
-import { flash } from './flash';
 import { configuration } from './../../../configuration/configuration';
+import { Flash } from './flash';
 
 export interface Match {
   range: vscode.Range;
   text: string;
 }
 
-export function createSearchMatches(document: vscode.TextDocument): Match[] {
+export function createSearchMatches(flash: Flash,document: vscode.TextDocument): Match[] {
   let matches: Match[] = [];
   if (!flash.searchString.length) return matches;
 

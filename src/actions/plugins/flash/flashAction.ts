@@ -4,13 +4,6 @@ import { Position } from 'vscode';
 import { VimState } from '../../../state/vimState';
 import { RegisterAction } from '../../base';
 import { configuration } from '../../../configuration/configuration';
-import {
-  appendSearchString,
-  resetFlash,
-  flash,
-  deleteSearchString,
-  recordPreviousMode,
-} from './flash';
 import { createSearchMatches } from './flashMatch';
 import {
   cleanAllFlashMarkerDecorations,
@@ -22,7 +15,6 @@ import {
 class FlashCommand extends BaseCommand {
   modes = [Mode.Normal, Mode.Visual, Mode.VisualLine, Mode.VisualBlock];
   keys = ['s'];
-  override isJump = true;
 
   public override doesActionApply(vimState: VimState, keysPressed: string[]) {
     return (
@@ -35,8 +27,8 @@ class FlashCommand extends BaseCommand {
   public override async exec(position: Position, vimState: VimState): Promise<void> {
     if (!configuration.flash.enable) return;
 
-    resetFlash();
-    recordPreviousMode(vimState.currentMode);
+    vimState.flash.reset();
+    vimState.flash.recordPreviousMode(vimState.currentMode);
     await vimState.setCurrentMode(Mode.FlashSearchInProgressMode);
   }
 }
@@ -45,6 +37,7 @@ class FlashCommand extends BaseCommand {
 class FlashSearchInProgressCommand extends BaseCommand {
   modes = [Mode.FlashSearchInProgressMode];
   keys = ['<character>'];
+  override isJump = true;
 
   public override async exec(position: Position, vimState: VimState): Promise<void> {
     const chat = this.keysPressed[0];
@@ -56,14 +49,14 @@ class FlashSearchInProgressCommand extends BaseCommand {
 
   private handleSearch(chat: string, vimState: VimState) {
     if (this.isBackSpace(chat)) {
-      deleteSearchString();
+      vimState.flash.deleteSearchString();
     } else {
-      appendSearchString(chat);
+      vimState.flash.appendSearchString(chat);
     }
 
     cleanAllFlashMarkerDecorations();
 
-    const matches = createSearchMatches(vimState.document);
+    const matches = createSearchMatches(vimState.flash, vimState.document);
     const labels = createMarkerLabels(matches, vimState);
     createMarkerDecorations(matches, labels, vimState.editor);
   }
@@ -71,8 +64,8 @@ class FlashSearchInProgressCommand extends BaseCommand {
   private async handleJump(key: string, vimState: VimState) {
     const markerDecoration = findMarkerDecorationByLabel(key);
     vimState.cursorStopPosition = markerDecoration!.getJumpPosition();
-    await vimState.setCurrentMode(flash.previousMode!);
-    resetFlash();
+    await vimState.setCurrentMode(vimState.flash.previousMode!);
+    vimState.flash.reset();
   }
 
   private isBackSpace(key: string) {
@@ -86,7 +79,7 @@ class CommandEscFlashSearchInProgressMode extends BaseCommand {
   keys = ['<Esc>'];
 
   public override async exec(position: Position, vimState: VimState): Promise<void> {
-    await vimState.setCurrentMode(flash.previousMode!);
-    resetFlash();
+    await vimState.setCurrentMode(vimState.flash.previousMode!);
+    vimState.flash.reset();
   }
 }

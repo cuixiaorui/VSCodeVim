@@ -1,28 +1,30 @@
 import { Mode } from '../../../mode/mode';
 import { cleanAllFlashMarkerDecorations } from './flashMarker';
+import { escapeCSSIcons } from '../../../util/statusBarTextUtils';
 
-export interface Flash {
-  searchString: string;
-  previousMode: Mode | undefined;
-}
+export class Flash {
+  public searchString: string = '';
+  public previousMode: Mode | undefined = undefined;
 
-export const flash: Flash = {
-  searchString: '',
-  previousMode: undefined,
-};
+  displayStatusBarText(cursorChar: string) {
+    return escapeCSSIcons(`flash:${this.searchString}${cursorChar}`);
+  }
 
-export function appendSearchString(chat: string) {
-  flash.searchString += chat;
-}
-export function deleteSearchString() {
-  flash.searchString = flash.searchString.slice(0, -1);
-}
+  appendSearchString(chat: string) {
+    this.searchString += chat;
+  }
 
-export function recordPreviousMode(mode: Mode) {
-  flash.previousMode = mode;
-}
-export function resetFlash() {
-  flash.searchString = '';
-  flash.previousMode = undefined;
-  cleanAllFlashMarkerDecorations();
+  deleteSearchString() {
+    this.searchString = this.searchString.slice(0, -1);
+  }
+
+  recordPreviousMode(mode: Mode) {
+    this.previousMode = mode;
+  }
+
+  reset() {
+    this.searchString = '';
+    this.previousMode = undefined;
+    cleanAllFlashMarkerDecorations();
+  }
 }

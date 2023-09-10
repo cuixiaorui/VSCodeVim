@@ -193,6 +193,8 @@ export function statusBarText(vimState: VimState) {
       return vimState.modeData.commandLine.display(cursorChar);
     case Mode.CommandlineInProgress:
       return vimState.modeData.commandLine.display(cursorChar);
+    case Mode.FlashSearchInProgressMode:
+      return vimState.flash.displayStatusBarText(cursorChar)
     default:
       return '';
   }
