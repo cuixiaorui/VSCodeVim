@@ -27,7 +27,7 @@ interface IBaseMovement {
   execActionWithCount(
     position: Position,
     vimState: VimState,
-    count: number
+    count: number,
   ): Promise<Position | IMovement>;
 }
 
@@ -258,7 +258,7 @@ export class VimState implements vscode.Disposable {
             mode,
             replaceState: new ReplaceState(
               this.cursors.map((cursor) => cursor.stop),
-              this.recordedState.count
+              this.recordedState.count,
             ),
           }
         : mode === Mode.CommandlineInProgress
@@ -277,7 +277,7 @@ export class VimState implements vscode.Disposable {
             mode,
             highSurrogate: undefined,
           }
-        : { mode }
+        : { mode },
     );
   }
 
