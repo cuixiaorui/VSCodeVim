@@ -22,9 +22,7 @@ export class Flash {
     this.previousMode = mode;
   }
 
-  reset() {
-    this.searchString = '';
-    this.previousMode = undefined;
+  clean() {
     cleanAllFlashMarkerDecorations();
   }
 }

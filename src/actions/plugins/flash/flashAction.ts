@@ -10,7 +10,9 @@ import {
   findMarkerDecorationByLabel,
   createMarkerLabels,
   createMarkerDecorations,
+  getEnterJumpMarker,
 } from './flashMarker';
+import { Flash } from './flash';
 @RegisterAction
 class FlashCommand extends BaseCommand {
   modes = [Mode.Normal, Mode.Visual, Mode.VisualLine, Mode.VisualBlock];
@@ -27,7 +29,7 @@ class FlashCommand extends BaseCommand {
   public override async exec(position: Position, vimState: VimState): Promise<void> {
     if (!configuration.flash.enable) return;
 
-    vimState.flash.reset();
+    vimState.flash = new Flash();
     vimState.flash.recordPreviousMode(vimState.currentMode);
     await vimState.setCurrentMode(Mode.FlashSearchInProgressMode);
   }
@@ -37,14 +39,31 @@ class FlashCommand extends BaseCommand {
 class FlashSearchInProgressCommand extends BaseCommand {
   modes = [Mode.FlashSearchInProgressMode];
   keys = ['<character>'];
+
   override isJump = true;
 
   public override async exec(position: Position, vimState: VimState): Promise<void> {
     const chat = this.keysPressed[0];
 
+    if (this.isPressEnter(chat)) {
+      this.handleEnterJump(vimState);
+      return;
+    }
+
     findMarkerDecorationByLabel(chat)
       ? this.handleJump(chat, vimState)
       : this.handleSearch(chat, vimState);
+  }
+
+  private isPressEnter(chat: string) {
+    return chat === '\n';
+  }
+
+  private async handleEnterJump(vimState: VimState) {
+    const firstMarker = getEnterJumpMarker(vimState);
+    if (firstMarker) {
+      this.changeCursorPosition(firstMarker.getJumpPosition(), vimState);
+    }
   }
 
   private handleSearch(chat: string, vimState: VimState) {
@@ -56,16 +75,23 @@ class FlashSearchInProgressCommand extends BaseCommand {
 
     cleanAllFlashMarkerDecorations();
 
-    const matches = createSearchMatches(vimState.flash, vimState.document);
+    const matches = createSearchMatches(vimState.flash, vimState.document, vimState);
     const labels = createMarkerLabels(matches, vimState);
     createMarkerDecorations(matches, labels, vimState.editor);
+    getEnterJumpMarker(vimState).markEnterJump()
   }
 
   private async handleJump(key: string, vimState: VimState) {
     const markerDecoration = findMarkerDecorationByLabel(key);
-    vimState.cursorStopPosition = markerDecoration!.getJumpPosition();
+    if (markerDecoration) {
+      this.changeCursorPosition(markerDecoration.getJumpPosition(), vimState);
+    }
+  }
+
+  private async changeCursorPosition(position: Position, vimState: VimState) {
+    vimState.cursorStopPosition = position;
     await vimState.setCurrentMode(vimState.flash.previousMode!);
-    vimState.flash.reset();
+    vimState.flash.clean();
   }
 
   private isBackSpace(key: string) {
@@ -80,6 +106,6 @@ class CommandEscFlashSearchInProgressMode extends BaseCommand {
 
   public override async exec(position: Position, vimState: VimState): Promise<void> {
     await vimState.setCurrentMode(vimState.flash.previousMode!);
-    vimState.flash.reset();
+    vimState.flash.clean();
   }
 }

@@ -1,12 +1,13 @@
 import { VimState } from '../../../state/vimState';
 import { Match } from './flashMatch';
 import * as vscode from 'vscode';
+import { type DecorationOptions } from 'vscode';
 
 let markerDecorations: MarkerDecoration[] = [];
 
 export class MarkerDecoration {
   private textEditorDecorationType: vscode.TextEditorDecorationType;
-  private range: vscode.Range;
+  public range: vscode.Range;
   private editor: vscode.TextEditor;
   public label: string;
   constructor(range: vscode.Range, label: string, editor: vscode.TextEditor) {
@@ -29,11 +30,21 @@ export class MarkerDecoration {
     return this.range.start;
   }
 
-  private getRangesOrOptions() {
+  setMarkerLabelBackgroundColor(backgroundColor: string) {
+    this.markerLabelBackgroundColor = backgroundColor;
+    this.show();
+  }
+
+  markEnterJump() {
+    this.setMarkerLabelBackgroundColor('#ffb86c');
+  }
+
+  private markerLabelBackgroundColor: string = '#ccff88';
+  private getRangesOrOptions(): DecorationOptions[] {
     const secondCharRenderOptions: vscode.ThemableDecorationInstanceRenderOptions = {
       before: {
         contentText: this.label,
-        backgroundColor: '#ccff88',
+        backgroundColor: this.markerLabelBackgroundColor,
         color: '#000000',
         margin: `0 -1ch 0 0; position: absolute;
             font-weight: normal;`,
@@ -42,7 +53,7 @@ export class MarkerDecoration {
     };
     return [
       {
-        range: this.range!,
+        range: this.range,
         renderOptions: { dark: secondCharRenderOptions, light: secondCharRenderOptions },
       },
     ];
@@ -59,6 +70,22 @@ export function cleanAllFlashMarkerDecorations() {
 
 export function findMarkerDecorationByLabel(label: string) {
   return markerDecorations.find((m) => m.label === label);
+}
+
+export function getEnterJumpMarker(vimState: VimState) {
+  const len = markerDecorations.length;
+  for (let i = 0; i < len; i++) {
+    const marker = markerDecorations[i];
+    if (
+      (marker.range.start.line === vimState.cursorStopPosition.line &&
+        marker.range.start.character > vimState.cursorStopPosition.character) ||
+      marker.range.start.line > vimState.cursorStopPosition.line
+    ) {
+      return marker;
+    }
+  }
+
+  return markerDecorations[0];
 }
 
 export function createMarkerDecorations(
