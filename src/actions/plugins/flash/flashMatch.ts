@@ -17,7 +17,8 @@ export function createSearchMatches(
   if (!flash.searchString.length) return matches;
   const documentText = document.getText();
   const flags = configuration.flash.ignorecase ? 'gi' : 'g';
-  const regex = new RegExp(flash.searchString, flags);
+  const searchString = flash.searchString.split('').map(escapeString).join('');
+  const regex = new RegExp(searchString, flags);
 
   let match;
   while ((match = regex.exec(documentText))) {
@@ -89,4 +90,9 @@ function sortMatches(matches: Match[], vimState: VimState) {
   }
 
   return result;
+}
+
+const needEscapeStrings: string = '$()*+.[]?\\^{}|';
+function escapeString(str: string) {
+  return needEscapeStrings.includes(str) ? '\\' + str : str;
 }

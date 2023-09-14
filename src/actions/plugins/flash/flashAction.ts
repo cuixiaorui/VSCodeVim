@@ -2,7 +2,9 @@ import { BaseCommand } from '../../base';
 import { Mode } from '../../../mode/mode';
 import { Position } from 'vscode';
 import { VimState } from '../../../state/vimState';
+import { VimError, ErrorCode } from '../../../error';
 import { RegisterAction } from '../../base';
+import { StatusBar } from '../../../statusBar';
 import { configuration } from '../../../configuration/configuration';
 import { createSearchMatches } from './flashMatch';
 import {
@@ -12,7 +14,7 @@ import {
   createMarkerDecorations,
   getEnterJumpMarker,
 } from './flashMarker';
-import { Flash } from './flash';
+import { createFlash } from './flash';
 @RegisterAction
 class FlashCommand extends BaseCommand {
   modes = [Mode.Normal, Mode.Visual, Mode.VisualLine, Mode.VisualBlock];
@@ -30,8 +32,7 @@ class FlashCommand extends BaseCommand {
   public override async exec(position: Position, vimState: VimState): Promise<void> {
     if (!configuration.flash.enable) return;
 
-    vimState.flash = new Flash();
-    vimState.flash.recordPreviousMode(vimState.currentMode);
+    vimState.flash = createFlash(vimState);
     await vimState.setCurrentMode(Mode.FlashSearchInProgressMode);
   }
 }
@@ -45,6 +46,11 @@ class FlashSearchInProgressCommand extends BaseCommand {
   public override async exec(position: Position, vimState: VimState): Promise<void> {
     const chat = this.keysPressed[0];
 
+    if (this.isTriggerLastSearch(chat, vimState)) {
+      this.handleLastSearch(vimState);
+      return;
+    }
+
     if (this.isPressEnter(chat)) {
       this.handleEnterJump(vimState);
       return;
@@ -53,6 +59,19 @@ class FlashSearchInProgressCommand extends BaseCommand {
     findMarkerDecorationByLabel(chat)
       ? this.handleJump(chat, vimState)
       : this.handleSearch(chat, vimState);
+  }
+
+  private isTriggerLastSearch(chat: string, vimState: VimState) {
+    return this.isPressEnter(chat) && vimState.flash.searchString === '';
+  }
+
+  private async handleLastSearch(vimState: VimState) {
+    if (vimState.flash.previousSearchString.length === 0) {
+      StatusBar.displayError(vimState, VimError.fromCode(ErrorCode.PatternNotFound));
+      await vimState.setCurrentMode(vimState.flash.previousMode!);
+      return;
+    }
+    this.handleSearch(vimState.flash.previousSearchString, vimState);
   }
 
   private isPressEnter(chat: string) {
@@ -90,6 +109,7 @@ class FlashSearchInProgressCommand extends BaseCommand {
       } else {
         this.changeCursorPosition(markerDecoration.getJumpPosition(), vimState);
       }
+      vimState.flash.recordSearchString();
     }
   }
 

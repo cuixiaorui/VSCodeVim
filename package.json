@@ -621,6 +621,16 @@
           "markdownDescription": "Enable the [CamelCaseMotion](https://github.com/bkad/CamelCaseMotion) plugin for Vim.",
           "default": false
         },
+        "vim.flash.enable": {
+          "type": "boolean",
+          "markdownDescription": "Enable the [Flash]() plugin for Vim.",
+          "default": false
+        },
+        "vim.flash.ignorecase": {
+          "type": "boolean",
+          "markdownDescription": "Set to consider case sensitive in search patterns",
+          "default": true
+        },
         "vim.easymotion": {
           "type": "boolean",
           "markdownDescription": "Enable the [EasyMotion](https://github.com/easymotion/vim-easymotion) plugin for Vim.",

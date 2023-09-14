@@ -1626,6 +1626,10 @@ export class ModeHandler implements vscode.Disposable, IModeHandler {
       this.vimState.easyMotion.updateDecorations(this.vimState.editor);
     }
 
+    if (this.currentMode !== Mode.FlashSearchInProgressMode) {
+      this.vimState.flash.clean()
+    }
+
     StatusBar.clear(this.vimState, false);
 
     // NOTE: this is not being awaited to save the 15-20ms block - I think this is fine
