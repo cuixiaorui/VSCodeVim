@@ -31,10 +31,62 @@ export function createSearchMatches(
     });
   }
 
-  // TODO 如果我们是多个 ranges 的话 应该如何处理呢？
-  // 暂时不知道多个 ranges 的时候是什么场景
-  const visibleRange = vimState.editor.visibleRanges[0];
-  return matches.filter((m) => {
-    return m.range.start.line >= visibleRange.start.line;
+  return sortMatches(matches, vimState);
+}
+
+function sortMatches(matches: Match[], vimState: VimState) {
+  function getMiddleIndex() {
+    const currentLine = vimState.cursorStartPosition.line;
+    return lineKeys
+      .map((lineNumber, index) => {
+        return {
+          diffValue: Math.abs(Number(lineNumber) - currentLine),
+          index,
+        };
+      })
+      .sort((a, b) => a.diffValue - b.diffValue)[0].index;
+  }
+
+  let result: Match[] = [];
+
+  const matchesMap: Record<number, Match[]> = {};
+
+  matches.forEach((match) => {
+    const key = match.range.start.line;
+    if (!matchesMap[key]) {
+      matchesMap[key] = [];
+    }
+
+    matchesMap[key].push(match);
   });
+
+  const lineKeys = Object.keys(matchesMap);
+  const m = getMiddleIndex();
+
+  let i = m + 1;
+  let j = m - 1;
+
+  const middleKey = Number(lineKeys[m]);
+  if (matchesMap[middleKey]) {
+    result.push(...matchesMap[middleKey]);
+  }
+
+  let max = lineKeys.length;
+  let min = 0;
+  while (i < max || j >= min) {
+    const nextKey = Number(lineKeys[i]);
+    if (matchesMap[nextKey]) {
+      result.push(...matchesMap[nextKey]);
+    }
+
+    const prevKey = Number(lineKeys[j]);
+    if (matchesMap[prevKey]) {
+      result.push(...matchesMap[prevKey]);
+    }
+
+    i++;
+    j--;
+  }
+
+  return result;
 }

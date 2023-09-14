@@ -30,6 +30,10 @@ export class MarkerDecoration {
     return this.range.start;
   }
 
+  getOperatorPosition(){
+    return this.range.end;
+  }
+
   setMarkerLabelBackgroundColor(backgroundColor: string) {
     this.markerLabelBackgroundColor = backgroundColor;
     this.show();
@@ -108,10 +112,11 @@ export function createMarkerLabels(matches: Match[], vimState: VimState) {
         return getNextSearchChat(range, vimState);
       })
     )
-  );
+  )
 
   // TODO 下面这个需要可以通过配置来让用户设置
   return 'sklyuiopnm,qwertzxcvbahdgjf;'.split('').filter((s) => {
+
     return !nextSearchChatList.includes(s);
   });
 }
@@ -121,5 +126,5 @@ function getNextSearchChat(range: vscode.Range, vimState: VimState) {
     range.end,
     new vscode.Position(range.end.line, range.end.character + 1)
   );
-  return vimState.document.getText(nextRange);
+  return vimState.document.getText(nextRange).toLocaleLowerCase();
 }

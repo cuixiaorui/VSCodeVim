@@ -247,7 +247,8 @@ export class RecordedState {
       this.hasRunOperator ||
       // TODO: Is this mode check necessary?
       mode === Mode.SearchInProgressMode ||
-      mode === Mode.CommandlineInProgress
+      mode === Mode.CommandlineInProgress ||
+      mode === Mode.FlashSearchInProgressMode
     ) {
       return undefined;
     }

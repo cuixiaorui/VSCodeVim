@@ -16,7 +16,8 @@ import { Flash } from './flash';
 @RegisterAction
 class FlashCommand extends BaseCommand {
   modes = [Mode.Normal, Mode.Visual, Mode.VisualLine, Mode.VisualBlock];
-  keys = ['s'];
+  keys = ['f'];
+  override actionType = 'motion' as const;
 
   public override doesActionApply(vimState: VimState, keysPressed: string[]) {
     return (
@@ -39,7 +40,6 @@ class FlashCommand extends BaseCommand {
 class FlashSearchInProgressCommand extends BaseCommand {
   modes = [Mode.FlashSearchInProgressMode];
   keys = ['<character>'];
-
   override isJump = true;
 
   public override async exec(position: Position, vimState: VimState): Promise<void> {
@@ -78,13 +78,18 @@ class FlashSearchInProgressCommand extends BaseCommand {
     const matches = createSearchMatches(vimState.flash, vimState.document, vimState);
     const labels = createMarkerLabels(matches, vimState);
     createMarkerDecorations(matches, labels, vimState.editor);
-    getEnterJumpMarker(vimState).markEnterJump()
+    getEnterJumpMarker(vimState).markEnterJump();
   }
 
   private async handleJump(key: string, vimState: VimState) {
     const markerDecoration = findMarkerDecorationByLabel(key);
     if (markerDecoration) {
-      this.changeCursorPosition(markerDecoration.getJumpPosition(), vimState);
+      const recordedState = vimState.recordedState;
+      if (recordedState.operator) {
+        this.changeCursorPosition(markerDecoration.getOperatorPosition(), vimState);
+      } else {
+        this.changeCursorPosition(markerDecoration.getJumpPosition(), vimState);
+      }
     }
   }
 
