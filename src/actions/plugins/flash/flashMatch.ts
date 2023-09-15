@@ -32,6 +32,8 @@ export function createSearchMatches(
     });
   }
 
+  if (matches.length === 0) return [];
+
   return sortMatches(filteredVisibleRange(matches, vimState), vimState);
 }
 
@@ -46,7 +48,6 @@ function filteredVisibleRange(matches: Match[], vimState: VimState) {
       })
     );
     return prev;
-
   }, [] as Match[]);
 }
 

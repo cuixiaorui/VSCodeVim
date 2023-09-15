@@ -95,6 +95,8 @@ class FlashSearchInProgressCommand extends BaseCommand {
     cleanAllFlashMarkerDecorations();
 
     const matches = createSearchMatches(vimState.flash, vimState.document, vimState);
+    if (matches.length === 0) return;
+
     const labels = createMarkerLabels(matches, vimState);
     createMarkerDecorations(matches, labels, vimState.editor);
     getEnterJumpMarker(vimState).markEnterJump();
