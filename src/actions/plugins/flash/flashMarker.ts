@@ -1,4 +1,5 @@
 import { VimState } from '../../../state/vimState';
+import { configuration } from './../../../configuration/configuration';
 import { Match } from './flashMatch';
 import * as vscode from 'vscode';
 import { type DecorationOptions } from 'vscode';
@@ -6,15 +7,17 @@ import { type DecorationOptions } from 'vscode';
 let markerDecorations: MarkerDecoration[] = [];
 
 export class MarkerDecoration {
-  private textEditorDecorationType: vscode.TextEditorDecorationType;
   public range: vscode.Range;
-  private editor: vscode.TextEditor;
   public label: string;
+  private textEditorDecorationType: vscode.TextEditorDecorationType;
+  private editor: vscode.TextEditor;
+  private markerLabelBackgroundColor: string
   constructor(range: vscode.Range, label: string, editor: vscode.TextEditor) {
     this.textEditorDecorationType = vscode.window.createTextEditorDecorationType({});
     this.range = range;
     this.editor = editor;
     this.label = label;
+    this.markerLabelBackgroundColor = configuration.flash.marker.backgroundColor;
   }
 
   show() {
@@ -30,7 +33,7 @@ export class MarkerDecoration {
     return this.range.start;
   }
 
-  getOperatorPosition(){
+  getOperatorPosition() {
     return this.range.end;
   }
 
@@ -40,10 +43,9 @@ export class MarkerDecoration {
   }
 
   markEnterJump() {
-    this.setMarkerLabelBackgroundColor('#ffb86c');
+    this.setMarkerLabelBackgroundColor(configuration.flash.marker.nextMarkerBackgroundColor);
   }
 
-  private markerLabelBackgroundColor: string = '#ccff88';
   private getRangesOrOptions(): DecorationOptions[] {
     const secondCharRenderOptions: vscode.ThemableDecorationInstanceRenderOptions = {
       before: {
@@ -112,11 +114,9 @@ export function createMarkerLabels(matches: Match[], vimState: VimState) {
         return getNextSearchChat(range, vimState);
       })
     )
-  )
+  );
 
-  // TODO 下面这个需要可以通过配置来让用户设置
-  return 'sklyuiopnm,qwertzxcvbahdgjf;'.split('').filter((s) => {
-
+  return configuration.flash.labels.split('').filter((s) => {
     return !nextSearchChatList.includes(s);
   });
 }

@@ -632,6 +632,21 @@
           "markdownDescription": "Set to consider case sensitive in search patterns",
           "default": true
         },
+        "vim.flash.labels": {
+          "type": "string",
+          "description": "Set the characters used for jump marker name.",
+          "default": "hklyuiopnm,qwertzxcvbasdgjf;"
+        },
+        "vim.flash.marker.backgroundColor": {
+          "type": "string",
+          "description": "The background color of the marker box.",
+          "default": "#ccff88"
+        },
+        "vim.flash.marker.nextMarkerBackgroundColor": {
+          "type": "string",
+          "description": "The background color of the next marker box.",
+          "default": "#ffb86c"
+        },
         "vim.easymotion": {
           "type": "boolean",
           "markdownDescription": "Enable the [EasyMotion](https://github.com/easymotion/vim-easymotion) plugin for Vim.",

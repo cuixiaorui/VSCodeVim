@@ -46,8 +46,10 @@ export class Configuration implements IConfiguration {
 
   flash: IFlashConfiguration = {
     enable: false,
-    ignorecase: true
-  }
+    ignorecase: true,
+    labels: 'hklyuiopnm,qwertzxcvbasdgjf;',
+    marker: { backgroundColor: '#ccff88', nextMarkerBackgroundColor: '#ffb86c' },
+  };
 
   targets: ITargetsConfiguration = {
     enable: false,

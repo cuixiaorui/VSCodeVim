@@ -266,7 +266,9 @@ class Configuration implements IConfiguration {
 
   flash = {
     enable: true,
-    ignorecase: true
+    ignorecase: true,
+    labels: 'hklyuiopnm,qwertzxcvbasdgjf;',
+    marker: { backgroundColor: '#ccff88', nextMarkerBackgroundColor: '#ffb86c' },
   };
 
   targets: ITargetsConfiguration = {
@@ -549,7 +551,7 @@ function overlapSetting(args: {
         this.getConfiguration('editor').update(
           args.settingName,
           value,
-          vscode.ConfigurationTarget.Global,
+          vscode.ConfigurationTarget.Global
         );
       },
       enumerable: true,
