@@ -36,13 +36,18 @@ export function createSearchMatches(
 }
 
 function filteredVisibleRange(matches: Match[], vimState: VimState) {
-  const visibleRange = vimState.editor.visibleRanges[0];
-  return matches.filter((match) => {
-    return (
-      match.range.start.line >= visibleRange.start.line &&
-      match.range.start.line <= visibleRange.end.line
+  return vimState.editor.visibleRanges.reduce((prev, visibleRange) => {
+    prev.push(
+      ...matches.filter((match) => {
+        return (
+          match.range.start.line >= visibleRange.start.line &&
+          match.range.start.line <= visibleRange.end.line
+        );
+      })
     );
-  });
+    return prev;
+
+  }, [] as Match[]);
 }
 
 function sortMatches(matches: Match[], vimState: VimState) {
