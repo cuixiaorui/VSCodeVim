@@ -32,7 +32,17 @@ export function createSearchMatches(
     });
   }
 
-  return sortMatches(matches, vimState);
+  return sortMatches(filteredVisibleRange(matches, vimState), vimState);
+}
+
+function filteredVisibleRange(matches: Match[], vimState: VimState) {
+  const visibleRange = vimState.editor.visibleRanges[0];
+  return matches.filter((match) => {
+    return (
+      match.range.start.line >= visibleRange.start.line &&
+      match.range.start.line <= visibleRange.end.line
+    );
+  });
 }
 
 function sortMatches(matches: Match[], vimState: VimState) {
