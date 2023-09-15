@@ -1,27 +1,28 @@
 {
-  "name": "vim",
-  "displayName": "Vim",
-  "description": "Vim emulation for Visual Studio Code",
+  "name": "cvim",
+  "displayName": "CVim",
+  "description": "CVim emulation for Visual Studio Code",
   "icon": "images/icon.png",
   "version": "1.26.0",
-  "publisher": "vscodevim",
+  "publisher": "cuixiaorui",
   "galleryBanner": {
     "color": "#e3f4ff",
     "theme": "light"
   },
   "license": "MIT",
   "keywords": [
+    "cvim",
     "vim",
     "vi",
     "vscodevim"
   ],
   "repository": {
     "type": "git",
-    "url": "https://github.com/VSCodeVim/Vim.git"
+    "url": "https://github.com/cuixiaorui/VSCodeVim.git"
   },
-  "homepage": "https://github.com/VSCodeVim/Vim",
+  "homepage": "https://github.com/cuixiaorui/vscodeVim/",
   "bugs": {
-    "url": "https://github.com/VSCodeVim/Vim/issues"
+    "url": "https://github.com/cuixiaorui/VSCodeVim/issues"
   },
   "engines": {
     "vscode": "^1.74.0"
