@@ -13,6 +13,7 @@ import {
   createMarkerLabels,
   createMarkerDecorations,
   getEnterJumpMarker,
+  MarkerDecoration,
 } from './flashMarker';
 import { createFlash } from './flash';
 @RegisterAction
@@ -81,7 +82,7 @@ class FlashSearchInProgressCommand extends BaseCommand {
   private async handleEnterJump(vimState: VimState) {
     const firstMarker = getEnterJumpMarker(vimState);
     if (firstMarker) {
-      this.changeCursorPosition(firstMarker.getJumpPosition(), vimState);
+      this.changeCursorPosition(firstMarker, vimState);
     }
   }
 
@@ -105,18 +106,18 @@ class FlashSearchInProgressCommand extends BaseCommand {
   private async handleJump(key: string, vimState: VimState) {
     const markerDecoration = findMarkerDecorationByLabel(key);
     if (markerDecoration) {
-      const recordedState = vimState.recordedState;
-      if (recordedState.operator) {
-        this.changeCursorPosition(markerDecoration.getOperatorPosition(), vimState);
-      } else {
-        this.changeCursorPosition(markerDecoration.getJumpPosition(), vimState);
-      }
+      this.changeCursorPosition(markerDecoration, vimState);
       vimState.flash.recordSearchString();
     }
   }
 
-  private async changeCursorPosition(position: Position, vimState: VimState) {
-    vimState.cursorStopPosition = position;
+  private async changeCursorPosition(marker: MarkerDecoration, vimState: VimState) {
+    const recordedState = vimState.recordedState;
+    if (recordedState.operator) {
+      vimState.cursorStopPosition = marker.getOperatorPosition();
+    } else {
+      vimState.cursorStopPosition = marker.getJumpPosition();
+    }
     await vimState.setCurrentMode(vimState.flash.previousMode!);
     vimState.flash.clean();
   }
