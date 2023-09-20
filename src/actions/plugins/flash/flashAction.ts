@@ -122,10 +122,10 @@ class FlashSearchInProgressCommand extends BaseCommand {
 
   private async deleteSearchString(vimState: VimState) {
     const markers = getCacheMarker(vimState.flash.searchString);
+    showMarkers(markers);
     updateMarkersRangeToForward(markers);
     updateMarkerLabel(markers, vimState);
     updateNextMatchMarker(markers, vimState.cursorStopPosition);
-    showMarkers(markers);
   }
 
   private async handleFirstSearchString(vimState: VimState) {
