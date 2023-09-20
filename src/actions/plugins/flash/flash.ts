@@ -1,5 +1,5 @@
 import { Mode } from '../../../mode/mode';
-import { cleanAllFlashMarkerDecorations } from './flashMarker';
+import { cleanFlashMarkers } from './flashMarker';
 import { escapeCSSIcons } from '../../../util/statusBarTextUtils';
 import { VimState } from '../../../state/vimState';
 
@@ -7,6 +7,7 @@ export class Flash {
   public searchString: string = '';
   public previousMode: Mode | undefined = undefined;
   public previousSearchString: string = '';
+  public firstSearchChat: string = '';
 
   displayStatusBarText(cursorChar: string) {
     return escapeCSSIcons(`flash:${this.searchString}${cursorChar}`);
@@ -23,9 +24,8 @@ export class Flash {
   recordPreviousMode(mode: Mode) {
     this.previousMode = mode;
   }
-
   clean() {
-    cleanAllFlashMarkerDecorations();
+    cleanFlashMarkers(this);
   }
 
   recordSearchString() {

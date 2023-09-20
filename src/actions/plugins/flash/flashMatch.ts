@@ -1,7 +1,6 @@
 import * as vscode from 'vscode';
 import { VimState } from '../../../state/vimState';
 import { configuration } from './../../../configuration/configuration';
-import { Flash } from './flash';
 
 export interface Match {
   range: vscode.Range;
@@ -9,15 +8,15 @@ export interface Match {
 }
 
 export function createSearchMatches(
-  flash: Flash,
+  rawSearchString: string,
   document: vscode.TextDocument,
   vimState: VimState
 ): Match[] {
   let matches: Match[] = [];
-  if (!flash.searchString.length) return matches;
+  if (!rawSearchString.length) return matches;
   const documentText = document.getText();
   const flags = configuration.flash.ignorecase ? 'gi' : 'g';
-  const searchString = flash.searchString.split('').map(escapeString).join('');
+  const searchString = rawSearchString.split('').map(escapeString).join('');
   const regex = new RegExp(searchString, flags);
 
   let match;
@@ -61,15 +60,13 @@ function sortMatches(matches: Match[], vimState: VimState) {
           index,
         };
       })
-      .sort((a, b) => a.diffValue - b.diffValue)[0].index;
-  }
+      .sort((a, b) => a.diffValue - b.diffValue)[0].index; }
 
   let result: Match[] = [];
 
   const matchesMap: Record<number, Match[]> = {};
 
-  matches.forEach((match) => {
-    const key = match.range.start.line;
+  matches.forEach((match) => { const key = match.range.start.line;
     if (!matchesMap[key]) {
       matchesMap[key] = [];
     }
@@ -108,7 +105,6 @@ function sortMatches(matches: Match[], vimState: VimState) {
   return result;
 }
 
-const needEscapeStrings: string = '$()*+.[]?\\^{}|';
-function escapeString(str: string) {
+const needEscapeStrings: string = '$()*+.[]?\\^{}|'; function escapeString(str: string) {
   return needEscapeStrings.includes(str) ? '\\' + str : str;
 }

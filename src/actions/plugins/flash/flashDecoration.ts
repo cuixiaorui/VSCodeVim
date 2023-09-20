@@ -4,7 +4,7 @@ import { createSearchMatches } from './flashMatch';
 import * as vscode from 'vscode';
 
 export function createFlashDecorations(vimState: VimState): SearchDecorations | undefined {
-  const matches = createSearchMatches(vimState.flash,vimState.document, vimState);
+  const matches = createSearchMatches(vimState.flash.searchString, vimState.document, vimState);
   const searchMatch: vscode.Range[] = matches.map(({ range }) => {
     return range;
   });
