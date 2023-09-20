@@ -81,7 +81,7 @@ class FlashSearchInProgressCommand extends BaseCommand {
       await vimState.setCurrentMode(vimState.flash.previousMode!);
       return;
     }
-    this.handleSearch(vimState.flash.previousSearchString, vimState);
+    this.handleSearch(vimState.flash.previousSearchString, vimState, true);
   }
 
   private isPressEnter(chat: string) {
@@ -99,7 +99,7 @@ class FlashSearchInProgressCommand extends BaseCommand {
     }
   }
 
-  private async handleSearch(chat: string, vimState: VimState) {
+  private async handleSearch(chat: string, vimState: VimState, isLastSearch: boolean = false) {
     if (this.isBackSpace(chat)) {
       vimState.flash.deleteSearchString();
 
@@ -111,7 +111,7 @@ class FlashSearchInProgressCommand extends BaseCommand {
     } else {
       vimState.flash.appendSearchString(chat);
 
-      if (vimState.flash.searchString.length === 1) {
+      if (vimState.flash.searchString.length === 1 || isLastSearch) {
         vimState.flash.firstSearchChat = chat;
         this.handleFirstSearchString(vimState);
       } else {
