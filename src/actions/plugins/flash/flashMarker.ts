@@ -155,6 +155,7 @@ export function updateNextMatchMarker(markers: Marker[], position: vscode.Positi
 
   nextMatchMarker = newNextMatchMarker;
   nextMatchMarker.markAsNextMatch();
+  nextMatchMarker.updateView();
 }
 
 export function getNextMatchMarker(searchString: string, position: vscode.Position) {
