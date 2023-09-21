@@ -642,7 +642,7 @@
           "description": "The background color of the marker box.",
           "default": "#ccff88"
         },
-        "vim.flash.marker.nextMarkerBackgroundColor": {
+        "vim.flash.marker.nextMatchBackgroundColor": {
           "type": "string",
           "description": "The background color of the next marker box.",
           "default": "#ffb86c"

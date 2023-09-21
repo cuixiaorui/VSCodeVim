@@ -77,7 +77,7 @@ class FlashSearchInProgressCommand extends BaseCommand {
 
   private async handleLastSearch(vimState: VimState) {
     if (vimState.flash.previousSearchString.length === 0) {
-      StatusBar.displayError(vimState, VimError.fromCode(ErrorCode.PatternNotFound));
+      StatusBar.displayError(vimState, VimError.fromCode(ErrorCode.NoLastSearch));
       await vimState.setCurrentMode(vimState.flash.previousMode!);
       return;
     }
@@ -101,6 +101,9 @@ class FlashSearchInProgressCommand extends BaseCommand {
 
   private async handleSearch(chat: string, vimState: VimState, isLastSearch: boolean = false) {
     if (this.isBackSpace(chat)) {
+      const markers = getCacheMarker(vimState.flash.searchString);
+      updateMarkersRangeToForward(markers);
+
       vimState.flash.deleteSearchString();
 
       if (vimState.flash.searchString.length === 0) {
@@ -123,7 +126,6 @@ class FlashSearchInProgressCommand extends BaseCommand {
   private async deleteSearchString(vimState: VimState) {
     const markers = getCacheMarker(vimState.flash.searchString);
     showMarkers(markers);
-    updateMarkersRangeToForward(markers);
     updateMarkerLabel(markers, vimState);
     updateNextMatchMarker(markers, vimState.cursorStopPosition);
   }
@@ -161,7 +163,13 @@ class FlashSearchInProgressCommand extends BaseCommand {
   }
 
   private async changeCursorPosition(marker: Marker, vimState: VimState) {
-    vimState.cursorStopPosition = marker.getJumpPosition();
+    const operator = vimState.recordedState.operator;
+    if (operator) {
+      vimState.cursorStopPosition = marker.getOperatorPosition();
+    } else {
+      vimState.cursorStopPosition = marker.getJumpPosition();
+    }
+
     exitFlashMode(vimState);
   }
 

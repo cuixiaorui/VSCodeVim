@@ -90,7 +90,7 @@ export interface IFlashConfiguration {
   enable: boolean;
   ignorecase: boolean;
   labels: string;
-  marker: { backgroundColor: string; nextMarkerBackgroundColor: string };
+  marker: { backgroundColor: string; nextMatchBackgroundColor: string };
 }
 
 export interface IConfiguration {

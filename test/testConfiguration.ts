@@ -48,7 +48,7 @@ export class Configuration implements IConfiguration {
     enable: false,
     ignorecase: true,
     labels: 'hklyuiopnm,qwertzxcvbasdgjf;',
-    marker: { backgroundColor: '#ccff88', nextMarkerBackgroundColor: '#ffb86c' },
+    marker: { backgroundColor: '#ccff88', nextMatchBackgroundColor: '#ffb86c' },
   };
 
   targets: ITargetsConfiguration = {

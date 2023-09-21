@@ -55,6 +55,10 @@ export class Marker {
     return this.labelShowRange.start;
   }
 
+  getOperatorPosition() {
+    return this.labelShowRange.end;
+  }
+
   setMarkerLabelBackgroundColor(backgroundColor: string) {
     this.markerLabelBackgroundColor = backgroundColor;
   }
@@ -81,7 +85,7 @@ export class Marker {
 
   markAsNextMatch() {
     this.isNextMatch = true;
-    this.setMarkerLabelBackgroundColor(configuration.flash.marker.nextMarkerBackgroundColor);
+    this.setMarkerLabelBackgroundColor(configuration.flash.marker.nextMatchBackgroundColor);
   }
 
   recoverNormalMatch() {
@@ -154,8 +158,10 @@ export function updateNextMatchMarker(markers: Marker[], position: vscode.Positi
   }
 
   nextMatchMarker = newNextMatchMarker;
-  nextMatchMarker.markAsNextMatch();
-  nextMatchMarker.updateView();
+  if (nextMatchMarker) {
+    nextMatchMarker.markAsNextMatch();
+    nextMatchMarker.updateView();
+  }
 }
 
 export function getNextMatchMarker(searchString: string, position: vscode.Position) {
