@@ -3,7 +3,7 @@
   "displayName": "CVim",
   "description": "CVim emulation for Visual Studio Code",
   "icon": "images/icon.png",
-  "version": "1.26.4",
+  "version": "1.26.5",
   "publisher": "cuixiaorui",
   "galleryBanner": {
     "color": "#e3f4ff",
