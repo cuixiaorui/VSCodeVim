@@ -70,7 +70,7 @@ export class Marker {
   updateRangeToForward() {
     const forwardRange = new vscode.Range(
       this.range.start,
-      new vscode.Position(this.range.end.line, this.range.end.character - 1)
+      new vscode.Position(this.range.end.line, this.range.end.character - 1),
     );
     this.range = forwardRange;
   }
@@ -78,7 +78,7 @@ export class Marker {
   updateRangeToBackward() {
     const backwardRange = new vscode.Range(
       this.range.start,
-      new vscode.Position(this.range.end.line, this.range.end.character + 1)
+      new vscode.Position(this.range.end.line, this.range.end.character + 1),
     );
     this.range = backwardRange;
   }
@@ -193,8 +193,8 @@ export function createMarkerLabels(matchRanges: { range: vscode.Range }[], vimSt
     new Set(
       matchRanges.map(({ range }) => {
         return getNextSearchChat(range, vimState);
-      })
-    )
+      }),
+    ),
   );
 
   return configuration.flash.labels.split('').filter((s) => {
@@ -205,9 +205,9 @@ export function createMarkerLabels(matchRanges: { range: vscode.Range }[], vimSt
 export function getNextSearchChat(range: vscode.Range, vimState: VimState) {
   const nextRange = new vscode.Range(
     range.end,
-    new vscode.Position(range.end.line, range.end.character + 1)
+    new vscode.Position(range.end.line, range.end.character + 1),
   );
-  return vimState.document.getText(nextRange).toLocaleLowerCase();
+  return vimState.document.getText(nextRange)
 }
 
 const markersMap: Record<string, Marker[]> = {};
@@ -259,6 +259,12 @@ export function updateMarkerLabel(markers: Marker[], vimState: VimState) {
 
 export function getMatchedMarkers(markers: Marker[], chat: string, vimState: VimState) {
   return markers.filter((marker) => {
+    if (configuration.flash.ignorecase) {
+      return (
+        getNextSearchChat(marker.range, vimState).toLocaleLowerCase() === chat.toLocaleLowerCase()
+      );
+    }
+
     return getNextSearchChat(marker.range, vimState) === chat;
   });
 }
