@@ -91,7 +91,7 @@ class FlashSearchInProgressCommand extends BaseCommand {
   private async handleEnterJump(vimState: VimState) {
     const firstMarker = getNextMatchMarker(
       vimState.flash.searchString,
-      vimState.cursorStopPosition
+      vimState.cursorStopPosition,
     );
 
     if (firstMarker) {
@@ -158,7 +158,6 @@ class FlashSearchInProgressCommand extends BaseCommand {
     const markerDecoration = findMarkerByLabel(getCacheMarker(vimState.flash.searchString), key);
     if (markerDecoration) {
       this.changeCursorPosition(markerDecoration, vimState);
-      vimState.flash.recordSearchString();
     }
   }
 
@@ -171,6 +170,7 @@ class FlashSearchInProgressCommand extends BaseCommand {
     }
 
     exitFlashMode(vimState);
+    vimState.flash.recordSearchString();
   }
 
   private isBackSpace(key: string) {
