@@ -4,7 +4,7 @@ import { RegisterAction } from './../base';
 import { BaseMovement, IMovement } from '../baseMotion';
 import { Position } from 'vscode';
 
-// @RegisterAction
+@RegisterAction
 export class SneakForward extends BaseMovement {
   keys = [
     ['s', '<character>', '<character>'],
@@ -71,7 +71,7 @@ export class SneakForward extends BaseMovement {
   }
 }
 
-// @RegisterAction
+@RegisterAction
 export class SneakBackward extends BaseMovement {
   keys = [
     ['S', '<character>', '<character>'],
