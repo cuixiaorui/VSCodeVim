@@ -102,7 +102,7 @@ class FlashSearchInProgressCommand extends BaseCommand {
   private async handleSearch(chat: string, vimState: VimState, isLastSearch: boolean = false) {
     if (this.isBackSpace(chat)) {
       const markers = getCacheMarker(vimState.flash.searchString);
-      updateMarkersRangeToForward(markers);
+      if (markers) updateMarkersRangeToForward(markers);
 
       vimState.flash.deleteSearchString();
 
