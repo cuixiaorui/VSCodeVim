@@ -1,10 +1,10 @@
 import * as vscode from 'vscode';
 
+import { Position } from 'vscode';
+import { Mode } from '../../../mode/mode';
 import { configuration } from './../../../configuration/configuration';
 import { TextEditor } from './../../../textEditor';
-import { IEasyMotion, EasyMotionSearchAction, Marker, Match, SearchOptions } from './types';
-import { Mode } from '../../../mode/mode';
-import { Position } from 'vscode';
+import { EasyMotionSearchAction, IEasyMotion, Marker, Match, SearchOptions } from './types';
 
 export class EasyMotion implements IEasyMotion {
   /**
@@ -167,15 +167,15 @@ export class EasyMotion implements IEasyMotion {
 
     // Sort by the index distance from the cursor index
     matches.sort((a: Match, b: Match): number => {
-      const absDiffA = computeAboluteDiff(a.index);
-      const absDiffB = computeAboluteDiff(b.index);
-      return absDiffA - absDiffB;
-
-      function computeAboluteDiff(matchIndex: number) {
+      const computeAboluteDiff = (matchIndex: number) => {
         const absDiff = Math.abs(cursorIndex - matchIndex);
         // Prioritize the matches on the right side of the cursor index
         return matchIndex < cursorIndex ? absDiff - 0.5 : absDiff;
-      }
+      };
+
+      const absDiffA = computeAboluteDiff(a.index);
+      const absDiffB = computeAboluteDiff(b.index);
+      return absDiffA - absDiffB;
     });
 
     return matches;
@@ -252,7 +252,7 @@ export class EasyMotion implements IEasyMotion {
         this.decorations[keystroke.length] = [];
       }
 
-      //#region Hack (remove once backend handles this)
+      // #region Hack (remove once backend handles this)
 
       /*
         This hack is here because the backend for easy motion reports two adjacent
@@ -282,7 +282,7 @@ export class EasyMotion implements IEasyMotion {
         }
       }
 
-      //#endregion
+      // #endregion
 
       // First Char/One Char decoration
       const firstCharFontColor =

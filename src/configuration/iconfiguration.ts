@@ -301,6 +301,7 @@ export interface IConfiguration {
   /**
    * Show line numbers
    */
+  // eslint-disable-next-line id-denylist
   number: boolean;
 
   /**
