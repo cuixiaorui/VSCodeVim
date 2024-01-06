@@ -188,7 +188,7 @@ export function createMarkers(matches: Match[], labels: string[], editor: vscode
   });
 }
 
-export function createMarkerLabels(matchRanges: { range: vscode.Range }[], vimState: VimState) {
+export function createMarkerLabels(matchRanges: Array<{ range: vscode.Range }>, vimState: VimState) {
   const nextSearchChatList = Array.from(
     new Set(
       matchRanges.map(({ range }) => {
@@ -244,7 +244,7 @@ export function updateMarkerLabel(markers: Marker[], vimState: VimState) {
   markers.forEach((marker) => {
     if (labels.length > 0) {
       if (checkLegalLabel(marker.label)) {
-        //合法的话 不处理了 但是需要把当前的 label 从 labels 里面去除掉
+        // 合法的话 不处理了 但是需要把当前的 label 从 labels 里面去除掉
         const index = labels.indexOf(marker.label);
         labels.splice(index, 1);
       } else {
