@@ -37,8 +37,10 @@ export class Configuration implements IConfiguration {
     bidirectionalSearch: false,
     marker: {
       backgroundColors: ['#ccff88', '#99ccff'],
-      charColor:"#000000"
+      charColor: '#000000',
     },
+    dim: true,
+    dimColor: '#777777',
   };
   surround = false;
   argumentObjectSeparators = [','];

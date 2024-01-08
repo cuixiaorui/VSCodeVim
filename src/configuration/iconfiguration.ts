@@ -96,6 +96,8 @@ export interface ILeapConfiguration {
     backgroundColors: string[];
     charColor: string;
   };
+  dim: boolean;
+  dimColor: string;
 }
 
 export interface IConfiguration {

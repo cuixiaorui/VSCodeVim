@@ -275,6 +275,8 @@ class Configuration implements IConfiguration {
       backgroundColors: ['#ccff88', '#99ccff'],
       charColor: '#000000',
     },
+    dim: true,
+    dimColor: '#777777',
   };
 
   targets: ITargetsConfiguration = {

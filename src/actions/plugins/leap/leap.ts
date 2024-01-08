@@ -5,6 +5,7 @@ import { VimState } from '../../../state/vimState';
 import { LeapAction } from './LeapAction';
 import { Position } from 'vscode';
 import { configuration } from '../../../configuration/configuration';
+import * as vscode from 'vscode';
 
 export enum LeapSearchDirection {
   Forward = -1,
@@ -21,6 +22,10 @@ export class Leap {
   direction?: LeapSearchDirection;
   leapAction?: LeapAction;
   firstSearchString?: string;
+  dimmingZone = vscode.window.createTextEditorDecorationType({
+    // to prevent empty string of dimColor
+    color: configuration.leap.dimColor || '#777777',
+  });
 
   constructor(vimState: VimState) {
     this.vimState = vimState;
@@ -35,6 +40,21 @@ export class Leap {
     this.setMarkersName();
 
     return this.markers;
+  }
+
+  public setDimmingZones() {
+    if (!configuration.leap.dim) return;
+    const dimmingZones: vscode.DecorationOptions[] = [];
+    const dimmingRenderOptions: vscode.ThemableDecorationRenderOptions = {
+      // we update the color here again in case the configuration has changed
+      color: configuration.leap.dimColor || '#777777',
+    };
+    dimmingZones.push({
+      // fill the whole document
+      range: new vscode.Range(0, 0, this.vimState.editor.document.lineCount, 0),
+      renderOptions: dimmingRenderOptions,
+    });
+    this.vimState.editor.setDecorations(this.dimmingZone, dimmingZones);
   }
 
   private setMarkersName() {
@@ -147,6 +167,11 @@ export class Leap {
     this.markers = [];
   }
 
+  public cleanupDimmingZones() {
+    if (!configuration.leap.dim) return;
+    this.vimState.editor.setDecorations(this.dimmingZone, []);
+  }
+
   public showMarkers() {
     this.markers.forEach((marker) => {
       marker.show();
@@ -236,5 +261,6 @@ export function getLeapInstance(): Leap {
 }
 
 export function disposeLeap() {
-  leap?.cleanupMarkers()
+  leap?.cleanupMarkers();
+  leap?.cleanupDimmingZones();
 }

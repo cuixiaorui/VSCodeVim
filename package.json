@@ -659,6 +659,16 @@
           "markdownDescription": "The color of the marker char",
           "default": "#000000"
         },
+        "vim.leap.dim": {
+          "type": "boolean",
+          "default": true,
+          "markdownDescription": "Enable the dimming of characters when using Leap"
+        },
+        "vim.leap.dimColor": {
+          "type": "string",
+          "default": "#777777",
+          "markdownDescription": "Set a custom color for the leap dimmed characters when `#vim.leap.dim#` is set to true."
+        },
         "vim.easymotion": {
           "type": "boolean",
           "markdownDescription": "Enable the [EasyMotion](https://github.com/easymotion/vim-easymotion) plugin for Vim.",
