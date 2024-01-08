@@ -47,6 +47,7 @@ export class LeapPrepareAction extends BaseCommand {
     );
 
     leap.showMarkers();
+    leap.setDimmingZones();
     await vimState.setCurrentMode(Mode.LeapPrepareMode);
   }
 
