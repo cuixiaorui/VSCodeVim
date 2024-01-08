@@ -536,7 +536,7 @@ Based on [vim-leap](https://github.com/ggandor/leap.nvim) and configured through
 | vim.leap.bidirectionalSearch | Enable/disable bidirectional search          | Boolean | false                          |                    |
 | vim.leap.marker.backgroundColors              | The background colors of the marker box.                                                                  | Array  | ['#ccff88', '#99ccff']                                            |
 | vim.leap.marker.charColor              | The color of the marker char.                                                                  | String  | "#000000"                                            |
-| vim.leap.dim           | Enable/Disable dim for leap | Boolean | true "#777777"                                            |
+| vim.leap.dim           | Enable/Disable dim for leap | Boolean | true
 | vim.leap.dimColor           | The dim color | String  | "#777777"                                            |
 
 Once leap is active, initiate motions using the following commands.After you initiate the motion, text decorators/markers will be displayed and you can press the keys displayed to jump to that position. For visual mode leap uses x instead of s because s is already taken by the surround plugin.
