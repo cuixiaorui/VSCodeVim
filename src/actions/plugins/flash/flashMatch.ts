@@ -10,9 +10,9 @@ export interface Match {
 export function createSearchMatches(
   rawSearchString: string,
   document: vscode.TextDocument,
-  vimState: VimState
+  vimState: VimState,
 ): Match[] {
-  let matches: Match[] = [];
+  const matches: Match[] = [];
   if (!rawSearchString.length) return matches;
   const documentText = document.getText();
   const flags = configuration.flash.ignorecase ? 'gi' : 'g';
@@ -44,14 +44,14 @@ function filteredVisibleRange(matches: Match[], vimState: VimState) {
           match.range.start.line >= visibleRange.start.line &&
           match.range.start.line <= visibleRange.end.line
         );
-      })
+      }),
     );
     return prev;
   }, [] as Match[]);
 }
 
 function sortMatches(matches: Match[], vimState: VimState) {
-  function getMiddleIndex() {
+  const getMiddleIndex = () => {
     const currentLine = vimState.cursorStartPosition.line;
     return lineKeys
       .map((lineNumber, index) => {
@@ -60,13 +60,15 @@ function sortMatches(matches: Match[], vimState: VimState) {
           index,
         };
       })
-      .sort((a, b) => a.diffValue - b.diffValue)[0].index; }
+      .sort((a, b) => a.diffValue - b.diffValue)[0].index;
+  };
 
-  let result: Match[] = [];
+  const result: Match[] = [];
 
   const matchesMap: Record<number, Match[]> = {};
 
-  matches.forEach((match) => { const key = match.range.start.line;
+  matches.forEach((match) => {
+    const key = match.range.start.line;
     if (!matchesMap[key]) {
       matchesMap[key] = [];
     }
@@ -85,8 +87,8 @@ function sortMatches(matches: Match[], vimState: VimState) {
     result.push(...matchesMap[middleKey]);
   }
 
-  let max = lineKeys.length;
-  let min = 0;
+  const max = lineKeys.length;
+  const min = 0;
   while (i < max || j >= min) {
     const nextKey = Number(lineKeys[i]);
     if (matchesMap[nextKey]) {
@@ -105,6 +107,7 @@ function sortMatches(matches: Match[], vimState: VimState) {
   return result;
 }
 
-const needEscapeStrings: string = '$()*+.[]?\\^{}|'; function escapeString(str: string) {
+const needEscapeStrings: string = '$()*+.[]?\\^{}|';
+function escapeString(str: string) {
   return needEscapeStrings.includes(str) ? '\\' + str : str;
 }
